@@ -9,6 +9,7 @@ const cartTotal = document.querySelector('.cart-total');
 const cartContent = document.querySelector('.cart-content');
 const productsDOM = document.querySelector('.products-center');
 
+
 //our main cart
 let cart = [];
 
@@ -35,12 +36,61 @@ class Products{
 
 //display products
 class UI{
-
+   displayProducts(products){
+       let result = ''
+       products.forEach(product => {
+          result += `
+             <!-- single product -->
+             <article class="product">
+               <div class="img-container">
+                 <img
+                  src=${product.image}
+                  alt="product"
+                  class="product-img"
+                 />
+              <button class="bag-btn" data-id=${product.id}>
+                 <i class="fas fa-shopping-cart"></i>
+                 add to bag
+              </button>
+              </div>
+               <h3>${product.title}</h3>
+               <h4>${product.price}</h4>
+             </article>
+            <!-- end of single product -->
+          `
+       })
+       productsDOM.innerHTML = result;
+   }
+   getBagButtons(){
+     const buttons = [...document.querySelectorAll('.bag-btn')];
+     buttons.forEach(button => {
+         let id = button.dataset.id;
+         let inCart = cart.find(item => item.id === id);
+         if(inCart) {
+             button.innerText = 'In Cart';
+             button.disabled = true;
+         }
+         else {
+             button.addEventListener('click', (e)=> {
+                e.target.innerText = 'In Cart';
+                e.target.disabled = true;
+                //get Product from prodycts
+                //add product to the cart
+                //save the cart in local storage
+                //set the values
+                //add cart item to cart
+                //show the cart
+             })
+         }
+     })
+   }
 }
 
 //local storage
 class Storage{
-
+  static saveProducts(products){
+      localStorage.setItem("products", JSON.stringify(products))
+  }
 }
 
 
@@ -50,5 +100,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     //get all products
-    products.getProducts().then(data => console.log(data))
-})
+    products.getProducts()
+    .then(products => {
+      ui.displayProducts(products);
+      Storage.saveProducts(products);
+    })
+      .then(() => {
+          ui.getBagButtons();
+      });
+    });
+    
